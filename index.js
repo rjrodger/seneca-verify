@@ -3,9 +3,11 @@
 
 var seneca = require('seneca')()
 
+
 var plugins = {
   user: {},
   auth: {},
+  'mongo-store': {connect:false},
   // bad: {}
 }
 
@@ -25,6 +27,7 @@ for( var pn in plugins ) {
   }
   catch(e) {
     console.log('use-thrown: '+e)
+    console.log(e.stack)
   }
 }
 
