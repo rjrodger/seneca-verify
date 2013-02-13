@@ -5,6 +5,7 @@ var seneca = require('seneca')()
 
 var plugins = {
   user: {},
+  auth: {},
   // bad: {}
 }
 
