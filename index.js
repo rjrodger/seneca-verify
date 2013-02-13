@@ -7,6 +7,7 @@ var seneca = require('seneca')()
 var plugins = {
   user: {},
   auth: {},
+  'jsonfile-store': {folder:'work'},
   'mongo-store': {connect:false},
   // bad: {}
 }
