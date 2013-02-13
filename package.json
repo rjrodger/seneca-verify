@@ -1,0 +1,23 @@
+{
+  "name": "seneca-verify",
+  "version": "0.5.0",
+  "description": "Verify standard set of seneca plugins",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rjrodger/seneca-verify"
+  },
+  "keywords": [
+    "seneca",
+    "verify"
+  ],
+  "author": "Richard Rodger (@rjrodger)",
+  "license": "MIT",
+  "dependencies": {
+    "seneca": "~0.5.0",
+    "seneca-user": "~0.2.0"
+  }
+}
