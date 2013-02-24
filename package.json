@@ -1,8 +1,8 @@
 {
   "name": "seneca-verify",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Verify standard set of seneca plugins",
-  "main": "index.js",
+  "main": "verify.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,10 +17,13 @@
   "author": "Richard Rodger (@rjrodger)",
   "license": "MIT",
   "dependencies": {
-    "seneca": "~0.5.0",
+    "seneca": "~0.5.1",
     "seneca-user": "~0.2.0",
     "seneca-auth": "~0.2.0",
     "seneca-mongo-store": "~0.1.1",
-    "seneca-jsonfile-store": "~0.1.1"
+    "seneca-jsonfile-store": "~0.1.1",
+    "seneca-cart": "~0.1.0",
+    "seneca-jsonrest-api": "~0.1.0",
+    "seneca-engage": "~0.1.0"
   }
 }

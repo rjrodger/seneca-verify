@@ -7,8 +7,14 @@ var seneca = require('seneca')()
 var plugins = {
   user: {},
   auth: {},
+
+  'jsonrest-api': {},
+  'engage': {},
+  'cart': {},
+
   'jsonfile-store': {folder:'work'},
   'mongo-store': {connect:false},
+
   // bad: {}
 }
 
@@ -19,7 +25,7 @@ for( var pn in plugins ) {
     console.log(pn)
     seneca.use( pn, plugins[pn], function(err){
       if( err ) {
-        console.log('use-cb: '+e)
+        console.log('use-cb: '+err)
       }
       else {
         success[pn] = true
