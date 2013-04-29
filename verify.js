@@ -14,6 +14,15 @@ var plugins = {
 
   'jsonfile-store': {folder:'work'},
   'mongo-store': {connect:false},
+  'level-store': {folder:'work'},
+
+  'memcached': {},
+  'vcache': {},
+  'perm': {},
+
+  // broken
+  // 'sqlite-store': {database:'sqlite.db'},
+  // 'redis-store':  {host:'localhost', port:12000},
 
   // bad: {}
 }
