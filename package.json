@@ -1,6 +1,6 @@
 {
   "name": "seneca-verify",
-  "version": "0.5.3",
+  "version": "0.5.8",
   "description": "Verify standard set of seneca plugins",
   "main": "verify.js",
   "scripts": {
@@ -25,6 +25,7 @@
     "seneca-level-store": "~0.1.1",
     "seneca-cart": "~0.1.1",
     "seneca-jsonrest-api": "~0.1.1",
-    "seneca-engage": "~0.1.1"
+    "seneca-engage": "~0.1.1",
+    "seneca-mail": "~0.1.1"
   }
 }

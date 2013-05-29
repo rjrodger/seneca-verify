@@ -9,6 +9,10 @@ var plugins = {
   auth: {},
 
   'jsonrest-api': {},
+
+  'mail': {templates:false},
+  'postmark-mail': {},
+
   'engage': {},
   'cart': {},
 
