@@ -16,13 +16,19 @@ var plugins = {
   'engage': {},
   'cart': {},
 
-  'jsonfile-store': {folder:'work'},
-  'mongo-store': {connect:false},
-  'level-store': {folder:'work'},
+  'account': {},
+  'project': {},
 
-  'memcached': {},
-  'vcache': {},
+  // need to be done separately
+  'jsonfile-store': {folder:'work'},
+  //'mongo-store': {connect:false},
+  //'level-store': {folder:'work'},
+  //'memcached': {},
+  //'vcache': {},
+
   'perm': {},
+
+  'data-editor': {},
 
   // broken
   // 'sqlite-store': {database:'sqlite.db'},
