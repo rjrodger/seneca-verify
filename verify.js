@@ -20,7 +20,7 @@ var plugins = {
   'project': {},
 
   // need to be done separately
-  'jsonfile-store': {folder:'work'},
+  //'jsonfile-store': {folder:'work'},
   //'mongo-store': {connect:false},
   //'level-store': {folder:'work'},
   //'memcached': {},
