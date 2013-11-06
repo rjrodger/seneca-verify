@@ -3,20 +3,21 @@
 
 var seneca = require('seneca')()
 var _ = require('underscore')
+var async = require('async')
 
 var plugins = {
-  user: {},
-  auth: {},
-  'jsonrest-api': {},
-  'mail': {templates:false},
-  'postmark-mail': {},
-  'engage': {},
-  'cart': {},
-  'account': {},
-  'project': {},
-  'perm': {},
-  'data-editor': {},
-  'mongo-store': {testSuite: ['defaultStoreTest']}
+  user:         {},
+  auth:         {},
+  'jsonrest-api':{},
+  mail:         {templates:false},
+  'postmark-mail':{},
+  engage:       {},
+  cart:         {},
+  account:      {},
+  project:      {},
+  perm:         {},
+  'data-editor':{testSuite: ['defaultStoreTest']}
+//  'mongo-store': {}
 }
 
 var success = {}
@@ -43,6 +44,31 @@ for( var pn in plugins ) {
   }
 }
 
+function runTest(pn, currentTestSuite, done){
+  testSuite[currentTestSuite](pn, currentTestSuite, function(err){
+    if (err){
+      if (!fail[pn]){
+        fail[pn] = []
+      }
+      fail[pn].push(currentTestSuite)
+    }else{
+      if (!success[pn]){
+        success[pn] = []
+      }
+      success[pn].push(currentTestSuite)
+    }
+    done()
+  })
+}
+
+var defaultStoreTest = function (pn, currentTestSuite, done){
+  console.log('Fire: ' + currentTestSuite + ' for ' + pn)
+  done('f')
+}
+
+var testSuite = {
+  defaultStoreTest: defaultStoreTest
+}
 
 seneca.ready(function(err){
   if( err ) {
@@ -51,28 +77,26 @@ seneca.ready(function(err){
   else {
     console.log('Seneca is ready')
 
+    var tests = {}
     for( var pn in plugins ) {
       // run now tests depending on the current plugin
       if (plugin.testSuite && _.isArray(plugin.testSuite)){
         for (var i = 0; i < plugin.testSuite.length; i++){
           var currentTestSuite = plugin.testSuite[i]
-          try {
-            var test = new Function(currentTestSuite)
-            test()
-          }
-          catch(e) {
-            if (!fail[pn]){
-              fail[pn] = []
-            }
-            fail[pn].push(currentTestSuite)
+
+          tests[currentTestSuite] = function(done){
+            runTest(pn, currentTestSuite, done)
           }
         }
       }
     }
-
-    printReport()
+    async.series(tests, function(err, out){
+      printReport()
+    })
   }
 })
+
+
 
 function printReport(){
   console.log('==============================================================')

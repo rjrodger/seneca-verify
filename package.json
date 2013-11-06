@@ -29,6 +29,7 @@
     "seneca-mail": "*",
     "seneca-account": "*",
     "seneca-project": "*",
-    "underscore":"1.5.2"
+    "underscore":"1.5.2",
+    "async":"0.2.9"
   }
 }
