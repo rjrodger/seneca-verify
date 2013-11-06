@@ -28,6 +28,7 @@
     "seneca-engage": "*",
     "seneca-mail": "*",
     "seneca-account": "*",
-    "seneca-project": "*"
+    "seneca-project": "*",
+    "underscore":"1.5.2"
   }
 }

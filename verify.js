@@ -2,71 +2,93 @@
 "use strict";
 
 var seneca = require('seneca')()
-
+var _ = require('underscore')
 
 var plugins = {
   user: {},
   auth: {},
-
   'jsonrest-api': {},
-
   'mail': {templates:false},
   'postmark-mail': {},
-
   'engage': {},
   'cart': {},
-
   'account': {},
   'project': {},
-
-  // need to be done separately
-  //'jsonfile-store': {folder:'work'},
-  //'mongo-store': {connect:false},
-  //'level-store': {folder:'work'},
-  //'memcached': {},
-  //'vcache': {},
-
   'perm': {},
-
   'data-editor': {},
-
-  // broken
-  // 'sqlite-store': {database:'sqlite.db'},
-  // 'redis-store':  {host:'localhost', port:12000},
-
-  // bad: {}
+  'mongo-store': {testSuite: ['defaultStoreTest']}
 }
 
 var success = {}
+var fail = {}
 
 for( var pn in plugins ) {
   try {
-    console.log(pn)
-    seneca.use( pn, plugins[pn], function(err){
+    var plugin = plugins[pn]
+    console.log('Loading plugin: ' + pn)
+    seneca.use( pn, plugin, function(err){
       if( err ) {
-        console.log('use-cb: '+err)
+        console.log('load plugin error: ' + err)
+        fail[pn]=['load']
       }
       else {
-        success[pn] = true
+        success[pn] = ['load']
       }
-    }) 
+    })
   }
   catch(e) {
-    console.log('use-thrown: '+e)
+    console.log('use-thrown: ' + e)
     console.log(e.stack)
+    fail[pn]=['load']
   }
 }
 
 
 seneca.ready(function(err){
   if( err ) {
-    console.log('ready: '+err)
+    console.log('Seneca ready error: ' + err)
   }
   else {
+    console.log('Seneca is ready')
+
     for( var pn in plugins ) {
-      if( !success[pn] ) {
-        console.log('FAIL: '+pn)
+      // run now tests depending on the current plugin
+      if (plugin.testSuite && _.isArray(plugin.testSuite)){
+        for (var i = 0; i < plugin.testSuite.length; i++){
+          var currentTestSuite = plugin.testSuite[i]
+          try {
+            var test = new Function(currentTestSuite)
+            test()
+          }
+          catch(e) {
+            if (!fail[pn]){
+              fail[pn] = []
+            }
+            fail[pn].push(currentTestSuite)
+          }
+        }
       }
     }
+
+    printReport()
   }
+})
+
+function printReport(){
+  console.log('==============================================================')
+  console.log('Report:')
+  console.log('==============================================================')
+  for( var pn in plugins ) {
+    if (success[pn]){
+      console.log('Success', pn, success[pn])
+    }
+    if (fail[pn]){
+      console.error('Fail', pn, fail[pn])
+    }
+  }
+}
+
+process.on('uncaughtException', function (err) {
+  console.error('Abort execution. Exception occurred: ' + err);
+  printReport()
 })
