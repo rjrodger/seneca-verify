@@ -28,6 +28,14 @@ var plugins = {/*
       // uncomment to test
       // native_parser:true
     },
+    pluginName: 'mongo-store',
+    testSuite:['defaultStoreTest']
+  },
+  'seneca-redis-store':{
+    host:'pub-redis-14285.us-east-1-3.2.ec2.garantiadata.com',
+    port:14285,
+    auth:'verify',
+    pluginName: 'redis-store',
     testSuite:['defaultStoreTest']
   }
 }
@@ -86,7 +94,7 @@ function addSuccess(pn, test){
 var defaultStoreTest = function (pn, currentTestSuite, done){
   console.log('Fire: ' + currentTestSuite + ' for ' + pn)
   try{
-    basic_store.basictest(seneca, done)
+    basic_store.basictest(seneca, plugins[pn], done)
   }catch(err){
     console.error('Error when running ' + currentTestSuite + ' on ' + pn)
     addFailed(pn, currentTestSuite)
@@ -109,12 +117,13 @@ seneca.ready(function(err){
     for( pn in plugins ) {
       // run now tests depending on the current plugin
       if (plugin.testSuite && _.isArray(plugin.testSuite)){
+        if (!success[pn]){
+          continue;
+        }
         for (var i = 0; i < plugin.testSuite.length; i++){
           currentTestSuite = plugin.testSuite[i]
 
-          tests[currentTestSuite] = function(done){
-            runTest(pn, currentTestSuite, done)
-          }
+          tests[pn + ':' + currentTestSuite] = runTest.bind(null, pn, currentTestSuite)
         }
       }
     }
@@ -123,7 +132,6 @@ seneca.ready(function(err){
     })
   }
 })
-
 
 
 function printReport(){
@@ -138,6 +146,10 @@ function printReport(){
       console.error('Fail', pn, fail[pn])
     }
   }
+  console.log('==============================================================')
+  console.log('==============================================================')
+  seneca.close()
+  process.exit(0)
 }
 
 process.on('uncaughtException', function (err) {

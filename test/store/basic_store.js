@@ -47,7 +47,7 @@ var verify = function(cb,tests){
 
 
 
-exports.basictest = function(si,done) {
+exports.basictest = function(si, opts, done) {
   si.ready(function(){
     console.log('BASIC')
     assert.isNotNull(si)
