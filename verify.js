@@ -1,7 +1,7 @@
 /* Copyright (c) 2013 Richard Rodger */
 "use strict";
 
-var seneca = require('seneca')({log:'print'})
+var seneca = require('seneca')(/*{log:'print'}*/)
 var _ = require('underscore')
 var async = require('async')
 var basic_store = require('./test/store/basic_store.js')
@@ -28,14 +28,16 @@ var plugins = {/*
       // uncomment to test
       // native_parser:true
     },
-    pluginName: 'mongo-store',
+    map: {'-/-/mongo': '*'},
+    role: 'mongo',
     testSuite:['defaultStoreTest']
   },
   'seneca-redis-store':{
     host:'pub-redis-14285.us-east-1-3.2.ec2.garantiadata.com',
     port:14285,
     auth:'verify',
-    pluginName: 'redis-store',
+    map: {'-/-/redis': '*'},
+    role: 'redis',
     testSuite:['defaultStoreTest']
   }
 }
@@ -67,14 +69,21 @@ for( pn in plugins ) {
 }
 
 function runTest(pn, currentTestSuite, done){
-  testSuite[currentTestSuite](pn, currentTestSuite, function(err){
-    if (err){
-      addFailed(pn, currentTestSuite)
-    }else{
-      addSuccess(pn, currentTestSuite)
-    }
-    done()
-  })
+  console.log('Fire: ' + currentTestSuite + ' for ' + pn)
+  try{
+    testSuite[currentTestSuite](pn, currentTestSuite, function(err){
+      if (err){
+        addFailed(pn, currentTestSuite)
+      }else{
+        addSuccess(pn, currentTestSuite)
+      }
+      done()
+    })
+  }catch(err){
+    console.error('Error when running ' + currentTestSuite + ' on ' + pn)
+    addFailed(pn, currentTestSuite)
+    done(err)
+  }
 }
 
 function addFailed(pn, testSuite){
@@ -92,18 +101,16 @@ function addSuccess(pn, test){
 }
 
 var defaultStoreTest = function (pn, currentTestSuite, done){
-  console.log('Fire: ' + currentTestSuite + ' for ' + pn)
-  try{
-    basic_store.basictest(seneca, plugins[pn], done)
-  }catch(err){
-    console.error('Error when running ' + currentTestSuite + ' on ' + pn)
-    addFailed(pn, currentTestSuite)
-    done(err)
-  }
+  require('./test/store/basic_store.js').basictest(seneca, plugins[pn], done)
+}
+
+var sqlStoreTest = function (pn, currentTestSuite, done){
+  require('./test/store/basic_store.js').sqltest(seneca, plugins[pn], done)
 }
 
 var testSuite = {
-  defaultStoreTest: defaultStoreTest
+  defaultStoreTest: defaultStoreTest,
+  sqlStoreTest    : sqlStoreTest
 }
 
 seneca.ready(function(err){
@@ -116,13 +123,13 @@ seneca.ready(function(err){
     var tests = {}
     for( pn in plugins ) {
       // run now tests depending on the current plugin
+      plugin = plugins[pn]
       if (plugin.testSuite && _.isArray(plugin.testSuite)){
         if (!success[pn]){
           continue;
         }
         for (var i = 0; i < plugin.testSuite.length; i++){
           currentTestSuite = plugin.testSuite[i]
-
           tests[pn + ':' + currentTestSuite] = runTest.bind(null, pn, currentTestSuite)
         }
       }

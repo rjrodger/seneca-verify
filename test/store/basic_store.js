@@ -9,7 +9,6 @@ var gex     = require('gex')
 
 
 var bartemplate = {
-  name$:'bar',
   base$:'moon',
   zone$:'zen',
 
@@ -51,6 +50,7 @@ exports.basictest = function(si, opts, done) {
   si.ready(function(){
     console.log('BASIC')
     assert.isNotNull(si)
+    var role = opts.role
 
     /* Set up a data set for testing the store.
      * //foo contains [{p1:'v1',p2:'v2'},{p2:'v2'}]
@@ -61,7 +61,7 @@ exports.basictest = function(si, opts, done) {
         save1: function(cb) {
           console.log('save1')
 
-          var foo1 = si.make({name$:'foo'}) ///si.make('foo')
+          var foo1 = si.make(role, {name$:'foo'}) ///si.make('foo')
           foo1.p1 = 'v1'
 
           foo1.save$( verify(cb, function(foo1){
@@ -108,7 +108,7 @@ exports.basictest = function(si, opts, done) {
         save3: function(cb) {
           console.log('save3')
 
-          scratch.bar = si.make( bartemplate )
+          scratch.bar = si.make( role, bartemplate )
           var mark = scratch.bar.mark = Math.random()
 
           scratch.bar.save$( verify(cb, function(bar){
@@ -122,7 +122,7 @@ exports.basictest = function(si, opts, done) {
         save4: function(cb) {
           console.log('save4')
 
-          scratch.foo2 = si.make({name$:'foo'})
+          scratch.foo2 = si.make(role, {name$:'foo'})
           scratch.foo2.p2 = 'v2'
 
           scratch.foo2.save$( verify(cb, function(foo2){
@@ -131,40 +131,11 @@ exports.basictest = function(si, opts, done) {
             scratch.foo2 = foo2
           }))
         },
-
-        query1: function(cb) {
-          console.log('query1')
-
-          scratch.barq = si.make('zen', 'moon','bar')
-          scratch.barq.list$({}, verify(cb, function(res){
-            assert.ok( 1 <= res.length)
-            barverify(res[0])
-          }))
-        },
-
         query2: function(cb) {
           console.log('query2')
 
           scratch.foo1.list$({}, verify(cb, function(res){
             assert.ok( 2 <= res.length)
-          }))
-        },
-
-        query3: function(cb) {
-          console.log('query3')
-
-          scratch.barq.list$({id:scratch.bar.id}, verify(cb, function(res){
-            assert.equal( 1, res.length )
-            barverify(res[0])
-          }))
-        },
-
-        query4: function(cb) {
-          console.log('query4')
-
-          scratch.bar.list$({mark:scratch.bar.mark}, verify(cb, function(res){
-            assert.equal( 1, res.length )
-            barverify(res[0])
           }))
         },
 
@@ -192,7 +163,7 @@ exports.basictest = function(si, opts, done) {
         remove1: function(cb) {
           console.log('remove1')
 
-          var foo = si.make({name$:'foo'})
+          var foo = si.make(role, {name$:'foo'})
 
           foo.remove$( {all$:true}, function(err, res){
             assert.isNull(err)
@@ -201,20 +172,7 @@ exports.basictest = function(si, opts, done) {
               assert.equal(0,res.length)
             }))
           })
-        },
-
-        remove2: function(cb) {
-          console.log('remove2')
-
-          scratch.bar.remove$({mark:scratch.bar.mark}, function(err,res){
-            assert.isNull(err)
-
-            scratch.bar.list$({mark:scratch.bar.mark}, verify(cb, function(res){
-              assert.equal( 0, res.length )
-            }))
-          })
-        },
-
+        }
       },
       function(err,out) {
         if( err ) {
@@ -228,19 +186,20 @@ exports.basictest = function(si, opts, done) {
 }
 
 
-exports.sqltest = function(si,done) {
+exports.sqltest = function(si, opts, done) {
   si.ready(function(){
     assert.isNotNull(si)
+    var role = opts.role
 
-    var Product = si.make('product')
+    var Product = si.make(role, 'product')
     var products = []
 
     async.series(
       {
         setup: function(cb) {
 
-          products.push( Product.make$({name:'apple',price:100}) )
-          products.push( Product.make$({name:'pear',price:200}) )
+          products.push( Product.make$(role, {name:'apple',price:100}) )
+          products.push( Product.make$(role, {name:'pear',price:200}) )
 
           var i = 0
           function saveproduct(){
