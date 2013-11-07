@@ -1,11 +1,12 @@
 /* Copyright (c) 2013 Richard Rodger */
 "use strict";
 
-var seneca = require('seneca')()
+var seneca = require('seneca')({log:'print'})
 var _ = require('underscore')
 var async = require('async')
+var basic_store = require('./test/store/basic_store.js')
 
-var plugins = {
+var plugins = {/*
   user:         {},
   auth:         {},
   'jsonrest-api':{},
@@ -16,14 +17,27 @@ var plugins = {
   account:      {},
   project:      {},
   perm:         {},
-  'data-editor':{testSuite: ['defaultStoreTest']}
-//  'mongo-store': {}
+  'data-editor':{testSuite: ['defaultStoreTest']},*/
+  'seneca-mongo-store':{
+    name:'seneca',
+    host:'paulo.mongohq.com',
+    port:10040,
+    username: 'seneca',
+    password: 'verify',
+    options:{
+      // uncomment to test
+      // native_parser:true
+    },
+    testSuite:['defaultStoreTest']
+  }
 }
 
 var success = {}
 var fail = {}
+var pn
+var currentTestSuite
 
-for( var pn in plugins ) {
+for( pn in plugins ) {
   try {
     var plugin = plugins[pn]
     console.log('Loading plugin: ' + pn)
@@ -47,23 +61,37 @@ for( var pn in plugins ) {
 function runTest(pn, currentTestSuite, done){
   testSuite[currentTestSuite](pn, currentTestSuite, function(err){
     if (err){
-      if (!fail[pn]){
-        fail[pn] = []
-      }
-      fail[pn].push(currentTestSuite)
+      addFailed(pn, currentTestSuite)
     }else{
-      if (!success[pn]){
-        success[pn] = []
-      }
-      success[pn].push(currentTestSuite)
+      addSuccess(pn, currentTestSuite)
     }
     done()
   })
 }
 
+function addFailed(pn, testSuite){
+  if (!fail[pn]){
+    fail[pn] = []
+  }
+  fail[pn].push(testSuite)
+}
+
+function addSuccess(pn, test){
+  if (!success[pn]){
+    success[pn] = []
+  }
+  success[pn].push(test)
+}
+
 var defaultStoreTest = function (pn, currentTestSuite, done){
   console.log('Fire: ' + currentTestSuite + ' for ' + pn)
-  done('f')
+  try{
+    basic_store.basictest(seneca, done)
+  }catch(err){
+    console.error('Error when running ' + currentTestSuite + ' on ' + pn)
+    addFailed(pn, currentTestSuite)
+    done(err)
+  }
 }
 
 var testSuite = {
@@ -78,11 +106,11 @@ seneca.ready(function(err){
     console.log('Seneca is ready')
 
     var tests = {}
-    for( var pn in plugins ) {
+    for( pn in plugins ) {
       // run now tests depending on the current plugin
       if (plugin.testSuite && _.isArray(plugin.testSuite)){
         for (var i = 0; i < plugin.testSuite.length; i++){
-          var currentTestSuite = plugin.testSuite[i]
+          currentTestSuite = plugin.testSuite[i]
 
           tests[currentTestSuite] = function(done){
             runTest(pn, currentTestSuite, done)
@@ -114,5 +142,6 @@ function printReport(){
 
 process.on('uncaughtException', function (err) {
   console.error('Abort execution. Exception occurred: ' + err);
+  addFailed(pn, currentTestSuite)
   printReport()
 })

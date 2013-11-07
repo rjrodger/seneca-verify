@@ -30,6 +30,12 @@
     "seneca-account": "*",
     "seneca-project": "*",
     "underscore":"1.5.2",
-    "async":"0.2.9"
+    "async":"0.2.9",
+    "seneca-mongo-store":"*",
+    "mocha": "1.9.x",
+    "chai": "1.5.x",
+    "async":"0.2.9",
+    "eyes":"0.1.8",
+    "gex":"0.1.3"
   }
 }
