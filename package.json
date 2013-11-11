@@ -15,6 +15,12 @@
     "verify"
   ],
   "author": "Richard Rodger (@rjrodger)",
+  "contributors": [
+    {
+      "name": "Mircea Alexandru",
+      "email": "mircea.alexandru@gmail.com"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "seneca": "*",
