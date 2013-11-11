@@ -61,7 +61,7 @@ exports.basictest = function(si, opts, done) {
         save1: function(cb) {
           console.log('save1')
 
-          var foo1 = si.make(role, {name$:'foo'}) ///si.make('foo')
+          var foo1 = si.make(role, '', 'foo') ///si.make('foo')
           foo1.p1 = 'v1'
 
           foo1.save$( verify(cb, function(foo1){
@@ -108,7 +108,7 @@ exports.basictest = function(si, opts, done) {
         save3: function(cb) {
           console.log('save3')
 
-          scratch.bar = si.make( role, bartemplate )
+          scratch.bar = si.make( role, '', bartemplate )
           var mark = scratch.bar.mark = Math.random()
 
           scratch.bar.save$( verify(cb, function(bar){
@@ -122,7 +122,7 @@ exports.basictest = function(si, opts, done) {
         save4: function(cb) {
           console.log('save4')
 
-          scratch.foo2 = si.make(role, {name$:'foo'})
+          scratch.foo2 = si.make(role, '', 'foo')
           scratch.foo2.p2 = 'v2'
 
           scratch.foo2.save$( verify(cb, function(foo2){
@@ -163,7 +163,7 @@ exports.basictest = function(si, opts, done) {
         remove1: function(cb) {
           console.log('remove1')
 
-          var foo = si.make(role, {name$:'foo'})
+          var foo = si.make(role, '', 'foo')
 
           foo.remove$( {all$:true}, function(err, res){
             assert.isNull(err)
@@ -185,73 +185,6 @@ exports.basictest = function(si, opts, done) {
   })
 }
 
-
-exports.sqltest = function(si, opts, done) {
-  si.ready(function(){
-    assert.isNotNull(si)
-    var role = opts.role
-
-    var Product = si.make(role, 'product')
-    var products = []
-
-    async.series(
-      {
-        setup: function(cb) {
-
-          products.push( Product.make$(role, {name:'apple',price:100}) )
-          products.push( Product.make$(role, {name:'pear',price:200}) )
-
-          var i = 0
-          function saveproduct(){
-            return function(cb) {
-              products[i].save$(cb)
-              i++
-            }
-          }
-
-          async.series([
-            saveproduct(),
-            saveproduct(),
-          ],cb)
-        },
-
-
-        query_string: function( cb ) {
-          Product.list$("SELECT * FROM product ORDER BY price",function(err,list){
-            var s = _.map(list,function(p){return p.toString()}).toString()
-            assert.ok(
-              gex("//product:{id=*;name=apple;price=100},//product:{id=*;name=pear;price=200}").on( s ) )
-            cb()
-          })
-        },
-
-        query_params: function( cb ) {
-          Product.list$(["SELECT * FROM product WHERE price >= ? AND price <= ?",0,1000],function(err,list){
-            var s = _.map(list,function(p){return p.toString()}).toString()
-            assert.ok(
-              gex("//product:{id=*;name=apple;price=100},//product:{id=*;name=pear;price=200}").on( s ) )
-            cb()
-          })
-        },
-
-        teardown: function(cb) {
-          products.forEach(function(p){
-            p.remove$()
-          })
-          cb()
-        }
-      },
-      function(err,out){
-        if( err ) {
-          eyes.inspect( err )
-        }
-        si.__testcount++
-        assert.isNull(err)
-        done && done()
-      }
-    )
-  })
-}
 
 exports.closetest = function(si,testcount,done) {
   var RETRY_LIMIT = 10

@@ -1,46 +1,11 @@
 /* Copyright (c) 2013 Richard Rodger */
 "use strict";
 
-var seneca = require('seneca')(/*{log:'print'}*/)
+var seneca = require('seneca')({log:'print'})
 var _ = require('underscore')
 var async = require('async')
-var basic_store = require('./test/store/basic_store.js')
 
-var plugins = {/*
-  user:         {},
-  auth:         {},
-  'jsonrest-api':{},
-  mail:         {templates:false},
-  'postmark-mail':{},
-  engage:       {},
-  cart:         {},
-  account:      {},
-  project:      {},
-  perm:         {},
-  'data-editor':{testSuite: ['defaultStoreTest']},*/
-  'seneca-mongo-store':{
-    name:'seneca',
-    host:'paulo.mongohq.com',
-    port:10040,
-    username: 'seneca',
-    password: 'verify',
-    options:{
-      // uncomment to test
-      // native_parser:true
-    },
-    map: {'-/-/mongo': '*'},
-    role: 'mongo',
-    testSuite:['defaultStoreTest']
-  },
-  'seneca-redis-store':{
-    host:'pub-redis-14285.us-east-1-3.2.ec2.garantiadata.com',
-    port:14285,
-    auth:'verify',
-    map: {'-/-/redis': '*'},
-    role: 'redis',
-    testSuite:['defaultStoreTest']
-  }
-}
+var plugins = require('./config/credentials.js')
 
 var success = {}
 var fail = {}
