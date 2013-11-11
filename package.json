@@ -15,6 +15,12 @@
     "verify"
   ],
   "author": "Richard Rodger (@rjrodger)",
+  "contributors": [
+    {
+      "name": "Mircea Alexandru",
+      "email": "mircea.alexandru@gmail.com"
+    }
+  ],
   "license": "MIT",
   "dependencies": {
     "seneca": "*",
@@ -28,6 +34,19 @@
     "seneca-engage": "*",
     "seneca-mail": "*",
     "seneca-account": "*",
-    "seneca-project": "*"
+    "seneca-project": "*",
+    "seneca-mongo-store":"*",
+    "seneca-redis-store": "*",
+    "seneca-jsonfile-store":"*",
+    "seneca-couchdb-store":"*",
+    "seneca-mysql-store":"*",
+    "seneca-postgres-store":"*",
+    "underscore":"1.5.2",
+    "async":"0.2.9",
+    "mocha": "1.9.x",
+    "chai": "1.5.x",
+    "async":"0.2.9",
+    "eyes":"0.1.8",
+    "gex":"0.1.3"
   }
 }
