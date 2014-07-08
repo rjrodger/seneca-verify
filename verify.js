@@ -10,8 +10,8 @@ var plugins = {
 
   'jsonrest-api': {},
 
-  'mail': {templates:false},
-  'postmark-mail': {},
+  //'mail': {templates:false},
+  //'postmark-mail': {},
 
   'engage': {},
   'cart': {},
@@ -27,8 +27,10 @@ var plugins = {
   //'vcache': {},
 
   'perm': {},
-
   'data-editor': {},
+
+  'web-access': {},
+  'user-roles': {},
 
   // broken
   // 'sqlite-store': {database:'sqlite.db'},
